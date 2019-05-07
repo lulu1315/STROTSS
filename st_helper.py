@@ -17,11 +17,12 @@ from pyr_lap import *
 from stylize_objectives import objective_class
 
 def style_transfer(stylized_im, content_im, style_path, output_path, scl, long_side, mask, content_weight=0., use_guidance=False, regions=0, coords=0, lr=2e-3):
-
+    
+    print('[starting style transfer]')
     REPORT_INTERVAL = 100
     RESAMPLE_FREQ = 1
     RESAMPLE_INCREASE_FREQ = 150
-    MAX_ITER = 250
+    MAX_ITER = 500
     save_ind = 0
 
     use_pyr=True
@@ -144,7 +145,8 @@ def style_transfer(stylized_im, content_im, style_path, output_path, scl, long_s
 
         ### Periodically Report Loss and Save Current Image ###
         if (i+1)%REPORT_INTERVAL == 0:
-            print((i+1),ell)
+            print('             [st_helper] iters: ' , i+1 , ell)
+            #print((i+1),ell)
             save_ind += 1
 
 

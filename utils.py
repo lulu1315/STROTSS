@@ -32,7 +32,7 @@ def aug_canvas(canvas, scale, s_iter):
 
     mx = max(h,w)
 
-    frac = 512./float(mx)
+    frac = 1024./float(mx)
 
     h = int(h*frac)
     w = int(w*frac)
@@ -210,12 +210,16 @@ big_patch_sz=256
 def load_path_for_pytorch(path, max_side=1000, force_scale=False, verbose=True):
 
     com_f = max
-
+    #print('utils/load_path_for_pytorch : ' , com_f)
     x = imread(path)
     s = x.shape
-
     x = x/255.-0.5
     xt = x.copy()
+    
+    print('     [utils/load_path_for_pytorch] path: ' , path)
+    print('     [utils/load_path_for_pytorch] max_side: ' , max_side)
+    print('     [utils/load_path_for_pytorch] force_scale: ' , force_scale)
+    print('     [utils/load_path_for_pytorch] initial: ' , s)
     
     if len(s) < 3:
         x = np.stack([x,x,x],2)
@@ -229,15 +233,13 @@ def load_path_for_pytorch(path, max_side=1000, force_scale=False, verbose=True):
 
     if (com_f(s[:2])>max_side and max_side>0) or force_scale:
 
-
         fac = float(max_side)/com_f(s[:2])
         x = F.upsample(x.unsqueeze(0),( int(s[0]*fac), int(s[1]*fac) ), mode='bilinear')[0]
         so = s
         s = x.shape
-        if verbose:
-            print(so)
-            print(s)
-            print('-----')
+        #if verbose:
+        print('     [utils/load_path_for_pytorch] final: ' , s)
+        print('-----')
 
 
     return x
@@ -245,7 +247,7 @@ def load_path_for_pytorch(path, max_side=1000, force_scale=False, verbose=True):
 
 def load_style_guidance(phi,path,coords_t,scale):
 
-
+    print('     [utils/load_style_guidance] scale' , scale)
     style_im = to_device(Variable(load_path_for_pytorch(path, max_side=scale, verbose=False, force_scale=True).unsqueeze(0)))
 
     coords = coords_t.copy()
@@ -298,13 +300,13 @@ def load_style_guidance(phi,path,coords_t,scale):
     return gz
 
 def load_style_folder(phi, paths, regions, ri, n_samps=-1,subsamps=-1,scale=-1, inner=1, cpu_mode=False):
-
+    print('     [utils/load_style_folder]')
 
     if n_samps > 0:
         list.sort(paths)
         paths = paths[::max((len(paths)//n_samps),1)]
-    else:
-        print(len(paths))
+    #else:
+        #print(len(paths))
         
     total_sum = 0.
     z = []

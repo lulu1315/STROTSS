@@ -13,19 +13,26 @@ from   st_helper import *
 import utils
 from   utils import *
 
-def run_st(content_path, style_path, content_weight, max_scl, coords, use_guidance,regions, output_path='./output.png'):
+#def run_st(content_path, style_path, content_weight, max_scl, coords, use_guidance,regions, output_path='./output.png'):
+def run_st(content_path, style_path, content_weight, max_scl, coords, use_guidance,regions, output_path):
 
     smll_sz = 64
     
     start = time.time()
 
-    content_im_big = utils.to_device(Variable(load_path_for_pytorch(content_path,512,force_scale=True).unsqueeze(0)))
+    content_im_big = utils.to_device(Variable(load_path_for_pytorch(content_path,1024,force_scale=True).unsqueeze(0)))
 
     for scl in range(1,max_scl):
 
         long_side = smll_sz*(2**(scl-1))
         lr = 2e-3
-
+        
+        print('----------')
+        print('[styleTransfer] scl: ' , scl)
+        print('[styleTransfer] long_side: ' , long_side)
+        print('[styleTransfer] content_weight: ' , content_weight)
+        print('----------')
+        
         ### Load Style and Content Image ###
         content_im = utils.to_device(Variable(load_path_for_pytorch(content_path,long_side,force_scale=True).unsqueeze(0)))
         content_im_mean = utils.to_device(Variable(load_path_for_pytorch(style_path,long_side,force_scale=True).unsqueeze(0))).mean(2,keepdim=True).mean(3,keepdim=True)
@@ -75,8 +82,11 @@ if __name__=='__main__':
     ### Parse Command Line Arguments ###
     content_path = sys.argv[1]
     style_path = sys.argv[2]
-    content_weight = float(sys.argv[3])*16.0
-    max_scl = 5
+    output_path = sys.argv[3]
+    max_scl = int(sys.argv[5])
+    #content_weight = float(sys.argv[4])*16.0
+    content_weight = float(sys.argv[4])*(2**max_scl)
+    
 
     use_guidance_region = '-gr' in sys.argv
     use_guidance_points = False
@@ -101,4 +111,4 @@ if __name__=='__main__':
             regions = [[imread(content_path)[:,:]*0.+1.], [imread(style_path)[:,:]*0.+1.]]
 
     ### Style Transfer and save output ###
-    loss,canvas = run_st(content_path,style_path,content_weight,max_scl,coords,use_guidance_points,regions)
+    loss,canvas = run_st(content_path,style_path,content_weight,max_scl,coords,use_guidance_points,regions,output_path)
