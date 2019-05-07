@@ -85,7 +85,7 @@ if __name__=='__main__':
     output_path = sys.argv[3]
     max_scl = int(sys.argv[5])
     #content_weight = float(sys.argv[4])*16.0
-    content_weight = float(sys.argv[4])*(2**max_scl)
+    content_weight = float(sys.argv[4])*(2**(max_scl-1))
     
 
     use_guidance_region = '-gr' in sys.argv

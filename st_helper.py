@@ -3,6 +3,7 @@ import math
 import sys
 from glob import glob
 import shutil
+import os
 
 import torch
 from torch.autograd import Variable
@@ -27,7 +28,8 @@ def style_transfer(stylized_im, content_im, style_path, output_path, scl, long_s
 
     use_pyr=True
 
-    temp_name = './'+output_path.split('/')[-1].split('.')[0]+'_temp.png'
+    #temp_name = './'+output_path.split('/')[-1].split('.')[0]+'_temp.png'
+    temp_name = './'+output_path.split('/')[-1].split('.')[0]+'_'+str(os.getpid())+'.png'
 
     ### Keep track of current output image for GUI ###
     canvas = aug_canvas(stylized_im, scl, 0)
