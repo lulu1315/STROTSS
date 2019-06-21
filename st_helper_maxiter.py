@@ -20,21 +20,18 @@ from vgg_pt import *
 from pyr_lap import *
 from stylize_objectives import objective_class
 
-def style_transfer(stylized_im,content_im,style_path,output_path,scl,max_scl,max_iters,loss_treshold,long_side,mask,content_weight=0.,use_guidance=False,regions=0,coords=0,lr=2e-3):
+def style_transfer(stylized_im, content_im, style_path, output_path, scl, long_side, mask, content_weight=0., use_guidance=False, regions=0, coords=0, lr=2e-3):
+    
+    print('[starting style transfer]')
     
     REPORT_INTERVAL = 50
     RESAMPLE_FREQ = 1
     RESAMPLE_INCREASE_FREQ = 150
-    #MAX_ITER = 500
-    MAX_ITER = max_iters
+    MAX_ITER = 250
     save_ind = 0
-    #losstresh=1e-5
-    
-    print('[starting style transfer] max iters : ',MAX_ITER,' loss treshold : ',loss_treshold)
-    
+
     use_pyr=True
-    #use_pyr=False
-    
+
     #temp_name = './'+output_path.split('/')[-1].split('.')[0]+'_temp.png'
     temp_name = './'+output_path.split('/')[-1].split('.')[0]+'_'+str(os.getpid())+'.png'
 
@@ -110,13 +107,8 @@ def style_transfer(stylized_im,content_im,style_path,output_path,scl,max_scl,max
 
     scl_start = time.time()
     #checkframe=0
-    i=-1
-    previousloss=10
-    deltaloss=10
-    #for i in range(MAX_ITER):
-    while deltaloss > loss_treshold and i<MAX_ITER:
-        
-        i=i+1
+    
+    for i in range(MAX_ITER):
         
         ### zero out gradients and compute output image from pyramid ##
         optimizer.zero_grad()
@@ -154,10 +146,6 @@ def style_transfer(stylized_im,content_im,style_path,output_path,scl,max_scl,max
         ell.backward()
         optimizer.step()
             
-        #loss condition
-        deltaloss = abs(previousloss-ell.item())
-        previousloss=ell.item()
-        #print ('iters : ' , i , ' loss : ', ell.item(), ' deltaloss : ', deltaloss)
         ## Periodically save output image for GUI ###
         if (i+1)%REPORT_INTERVAL == 0:
             
@@ -169,13 +157,14 @@ def style_transfer(stylized_im,content_im,style_path,output_path,scl,max_scl,max
             
             canvas = aug_canvas(stylized_im, scl, i)
             imwrite(temp_name, canvas)
+            
             shutil.move(temp_name, output_path)
 
         ### Periodically Report Loss and Save Current Image ###
         if (i+1)%REPORT_INTERVAL == 0:
-            print('             scale : ',scl,' iters: ' , i+1 ,' loss : ', ell.item())
+            print('             [st_helper] scale: ',scl,' iters: ' , i+1 , ell.item() ,ell)
             #print((i+1),ell)
             save_ind += 1
-            
-    print('             scale : ',scl,' took: ', int(time.time()-scl_start), 'Seconds (iters : ',i,')')
-    return stylized_im, ell, i
+
+    print('             scale : ',scl,' took: ', int(time.time()-scl_start), 'Seconds')
+    return stylized_im, ell

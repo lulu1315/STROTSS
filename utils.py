@@ -5,6 +5,9 @@ import sys
 
 import numpy as np
 import torch
+torch.manual_seed(0)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
@@ -29,7 +32,7 @@ def aug_canvas(canvas, scale, s_iter):
 
     h = canvas.size(2)
     w = canvas.size(3)
-
+    #print('[aug_canvas] canvas size (h/w) : ' , h , '/' , w)
     mx = max(h,w)
 
     frac = 1024./float(mx)
@@ -37,15 +40,15 @@ def aug_canvas(canvas, scale, s_iter):
     h = int(h*frac)
     w = int(w*frac)
 
-    prg = 0.
-    if scale < 4:
-        prg = (scale-1)*0.21+s_iter/250.*0.21
-    else:
-        prg = 0.63+s_iter/250.*0.37
-    prg = int(prg*100.)
+    #prg = 0.
+    #if scale < 4:
+    #    prg = (scale-1)*0.21+s_iter/250.*0.21
+    #else:
+    #    prg = 0.63+s_iter/250.*0.37
+    #prg = int(prg*100.)
 
-    canvas = F.upsample(canvas,(h,w),mode='bilinear').cpu()
-
+    #canvas = F.interpolate(canvas,(h,w),mode='bilinear',align_corners = True).cpu()
+    canvas = canvas.cpu()
     canvas = torch.clamp(canvas[0],-0.5,0.5).data.numpy().transpose(1,2,0)
 
     return np.uint8((canvas+0.5)*255)
@@ -216,10 +219,10 @@ def load_path_for_pytorch(path, max_side=1000, force_scale=False, verbose=True):
     x = x/255.-0.5
     xt = x.copy()
     
-    print('     [utils/load_path_for_pytorch] path: ' , path)
-    print('     [utils/load_path_for_pytorch] max_side: ' , max_side)
-    print('     [utils/load_path_for_pytorch] force_scale: ' , force_scale)
-    print('     [utils/load_path_for_pytorch] initial: ' , s)
+    #print('     [utils/load_path_for_pytorch] path: ' , path)
+    #print('     [utils/load_path_for_pytorch] max_side: ' , max_side)
+    #print('     [utils/load_path_for_pytorch] force_scale: ' , force_scale)
+    #print('     [utils/load_path_for_pytorch] initial: ' , s)
     
     if len(s) < 3:
         x = np.stack([x,x,x],2)
@@ -234,12 +237,12 @@ def load_path_for_pytorch(path, max_side=1000, force_scale=False, verbose=True):
     if (com_f(s[:2])>max_side and max_side>0) or force_scale:
 
         fac = float(max_side)/com_f(s[:2])
-        x = F.upsample(x.unsqueeze(0),( int(s[0]*fac), int(s[1]*fac) ), mode='bilinear')[0]
+        x = F.interpolate(x.unsqueeze(0),( int(s[0]*fac), int(s[1]*fac) ), mode='bilinear',align_corners = True)[0]
         so = s
         s = x.shape
         #if verbose:
-        print('     [utils/load_path_for_pytorch] final: ' , s)
-        print('-----')
+        #print('     [utils/load_path_for_pytorch] final: ' , s)
+        #print('-----')
 
 
     return x
@@ -247,7 +250,7 @@ def load_path_for_pytorch(path, max_side=1000, force_scale=False, verbose=True):
 
 def load_style_guidance(phi,path,coords_t,scale):
 
-    print('     [utils/load_style_guidance] scale' , scale)
+    #print('     [utils/load_style_guidance] scale' , scale)
     style_im = to_device(Variable(load_path_for_pytorch(path, max_side=scale, verbose=False, force_scale=True).unsqueeze(0)))
 
     coords = coords_t.copy()
@@ -300,7 +303,7 @@ def load_style_guidance(phi,path,coords_t,scale):
     return gz
 
 def load_style_folder(phi, paths, regions, ri, n_samps=-1,subsamps=-1,scale=-1, inner=1, cpu_mode=False):
-    print('     [utils/load_style_folder]')
+    #print('     [utils/load_style_folder]')
 
     if n_samps > 0:
         list.sort(paths)
@@ -320,7 +323,7 @@ def load_style_folder(phi, paths, regions, ri, n_samps=-1,subsamps=-1,scale=-1, 
         
         r_temp = regions[1][ri]
         r_temp = torch.from_numpy(r_temp).unsqueeze(0).unsqueeze(0).contiguous()
-        r = F.upsample(r_temp,(style_im.size(3),style_im.size(2)),mode='bilinear')[0,0,:,:].numpy()        
+        r = F.interpolate(r_temp,(style_im.size(3),style_im.size(2)),mode='bilinear',align_corners = True)[0,0,:,:].numpy()        
         sts = [style_im]
 
         z_ims.append(style_im)

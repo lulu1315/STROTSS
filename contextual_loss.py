@@ -1,4 +1,7 @@
 import torch
+torch.manual_seed(0)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 from torch.autograd import Variable
 import torch.nn.functional as F
 import numpy as np
@@ -66,7 +69,8 @@ def viz_d(zx,coords):
             x_norm = torch.sqrt((z**2).sum(1,keepdim=True))
             y_norm = torch.sqrt((anch**2).sum(1,keepdim=True))
             dz = torch.sum(z*anch,1,keepdim=True)/x_norm/y_norm
-            vizt = vizt+F.upsample(dz,(viz.size(2),viz.size(3)),mode='bilinear')*z.size(1)
+            #vizt = vizt+F.upsample(dz,(viz.size(2),viz.size(3)),mode='bilinear')*z.size(1)
+            vizt = vizt+F.interpolate(dz,(viz.size(2),viz.size(3)),mode='bilinear',align_corners=True)*z.size(1)
 
         viz = torch.max(viz,vizt/torch.max(vizt))
 

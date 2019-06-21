@@ -1,6 +1,9 @@
 import math
 
 import torch
+torch.manual_seed(0)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 from torch.autograd import Variable
 import torch.nn.functional as F
 
