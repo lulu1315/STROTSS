@@ -18,8 +18,8 @@ I also linearly interpolate the learning_rate between two min,max values at each
 
 you can see some results here : https://www.youtube.com/watch?v=9174cVe-9Qk
 
-<img src='https://github.com/lulu1315/STROTSS/blob/master/lou2.jpeg?raw=true'>
-<img src='https://github.com/lulu1315/STROTSS/blob/master/lou3.jpeg?raw=true'>
+<img src='https://raw.githubusercontent.com/lulu1315/STROTSS/master/images/lou2.jpeg?raw=true'>
+<img src='https://raw.githubusercontent.com/lulu1315/STROTSS/master/images/lou3.jpeg?raw=true'>
 
 ### original readme
 
