@@ -1,6 +1,6 @@
 ### Modifications from original code :
 
-<img src='https://github.com/lulu1315/STROTSS/blob/master/lou1.jpeg?raw=true'>
+<img src='https://raw.githubusercontent.com/lulu1315/STROTSS/master/images/lou1.jpeg?raw=true'>
 
 ```
 usage : python3 Styletransfer.py content_image style_image result_image content_weight output_resolution max_scale weight_decay max_iterations loss_treshold
@@ -9,8 +9,10 @@ usage : python3 Styletransfer.py content_image style_image result_image content_
 exemple : python3 Styletransfer.py content.png style.png out.png .2 1280 6 3 500 1e-5
 
 -*content_weight/weight_decay*: content_weight is the weight for the last iteration.content_weight is multiplied by weight decay at each iteration.weight decay = 1 would give you the same weight at each scale.The original code uses 2 for weight decay.I found that using a bigger weight decay gives better results for a low content_weight (<.2)
+
 -*output_resolution/max_scale* : the resolution at each scale is defined by output_resolution (resolution at final iteration) and max_scale.
--max_iterations/loss_treshold : moving to the next scale appends if abs(loss) is < loss_treshold or the number of iterations reaching max_iterations.(this is very empiric)
+
+-*max_iterations/loss_treshold* : moving to the next scale appends if abs(loss) is < loss_treshold or the number of iterations reaching max_iterations.(this is very empiric)
 
 I also linearly interpolate the learning_rate between two min,max values at each scale (I don't think it actually makes a big difference..)
 
