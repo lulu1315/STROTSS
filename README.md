@@ -3,10 +3,10 @@
 <img src='https://raw.githubusercontent.com/lulu1315/STROTSS/master/images/lou1.jpeg?raw=true'>
 
 ```
-usage : python3 Styletransfer.py content_image style_image result_image content_weight output_resolution max_scale weight_decay max_iterations loss_treshold
+usage : python3 styleTransfer.py content_image style_image result_image content_weight output_resolution max_scale weight_decay max_iterations loss_treshold
 ```
 
-exemple : python3 Styletransfer.py content.png style.png out.png .2 1280 6 3 500 1e-5
+exemple : python3 styleTransfer.py content.png style.png out.png .2 1280 6 3 500 1e-5
 
 -*content_weight/weight_decay*: content_weight is the weight for the last iteration.content_weight is multiplied by weight decay at each iteration.weight decay = 1 would give you the same weight at each scale.The original code uses 2 for weight decay.I found that using a bigger weight decay gives better results for a low content_weight (<.2)
 
